@@ -5,7 +5,7 @@
 
 // console.log('Loading background.js in extension _generate_background_page.html');
 
-let callback, filter, opt_extraInfoSpec;
+let filter, opt_extraInfoSpec;
 let lifeCycleName;
 
 // Set to 1 to console log the corresponding lifecycle event
@@ -54,7 +54,7 @@ function createListener(lifeCycleName, filter, opt_extraInfoSpec) {
       );
     }
 
-      // Examples: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onAuthRequired#Examples
+    // Examples: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/onAuthRequired#Examples
     if (lifeCycleName === 'onAuthRequired') {
       // Note: details.requestId should be unique for the same request
       if (pendingAuthRequests.indexOf(details.requestId) === -1) {
@@ -84,7 +84,7 @@ function createListener(lifeCycleName, filter, opt_extraInfoSpec) {
 lifeCycleName = Object.keys(consoleLogSettings)[consoleLogSettingIndex++];
 filter = {
   urls: ["*://*.ivan-lim.com/*"],
-  types: ["main_frame"]
+  types: ["main_frame", "xmlhttprequest"],
 };
 opt_extraInfoSpec = ["blocking"];
 createListener(lifeCycleName, filter, opt_extraInfoSpec);
