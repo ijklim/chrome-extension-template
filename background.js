@@ -5,18 +5,37 @@
 
 // console.log('Loading background.js in extension _generate_background_page.html');
 
-let filter, opt_extraInfoSpec;
-let lifeCycleName;
-
-// Set to 1 to console log the corresponding lifecycle event
-const consoleLogSettings = {
-  onBeforeRequest: 0,
-  onBeforeSendHeaders: 0,
-  onSendHeaders: 0,
-  onHeadersReceived: 0,
-  onAuthRequired: 1,
+// Set consoleLogSettings to 1 to console log the corresponding lifecycle event
+const lifeCycleNames = {
+  onBeforeRequest: {
+    consoleLogSettings: 0,
+    opt_extraInfoSpec: ["blocking"],
+  },
+  onBeforeSendHeaders: {
+    consoleLogSettings: 0,
+    opt_extraInfoSpec: ["blocking", "requestHeaders"],
+  },
+  onSendHeaders: {
+    consoleLogSettings: 0,
+    opt_extraInfoSpec: ["requestHeaders"],
+  },
+  onHeadersReceived: {
+    consoleLogSettings: 0,
+    opt_extraInfoSpec: ["responseHeaders"],
+  },
+  onAuthRequired: {
+    consoleLogSettings: 1,
+    opt_extraInfoSpec: ["blocking", "responseHeaders"],
+  },
+  onBeforeRedirect: {
+    consoleLogSettings: 0,
+    opt_extraInfoSpec: ["extraHeaders", "responseHeaders"],
+  },
+  onResponseStarted: {
+    consoleLogSettings: 1,
+    opt_extraInfoSpec: ["responseHeaders"],
+  },
 };
-let consoleLogSettingIndex = 0;
 const pendingAuthRequests = [];
 
 
@@ -40,7 +59,7 @@ function createListener(lifeCycleName, filter, opt_extraInfoSpec) {
       return;
     }
 
-    if (consoleLogSettings[lifeCycleName]) {
+    if (lifeCycleNames[lifeCycleName].consoleLogSettings) {
       console.log(
         `[background.js] webRequest.${lifeCycleName}, triggered by fetch()`,
         {
@@ -50,6 +69,7 @@ function createListener(lifeCycleName, filter, opt_extraInfoSpec) {
           timeStamp: details.timeStamp,
           type: details.type,
           url: details.url,
+          details,
         }
       );
     }
@@ -80,32 +100,10 @@ function createListener(lifeCycleName, filter, opt_extraInfoSpec) {
 }
 
 
-// onBeforeRequest
-lifeCycleName = Object.keys(consoleLogSettings)[consoleLogSettingIndex++];
-filter = {
+const filter = {
   urls: ["*://*.ivan-lim.com/*"],
-  types: ["main_frame", "xmlhttprequest"],
 };
-opt_extraInfoSpec = ["blocking"];
-createListener(lifeCycleName, filter, opt_extraInfoSpec);
-
-// onBeforeSendHeaders
-lifeCycleName = Object.keys(consoleLogSettings)[consoleLogSettingIndex++];
-opt_extraInfoSpec = ["blocking", "requestHeaders"];
-createListener(lifeCycleName, filter, opt_extraInfoSpec);
-
-// onSendHeaders
-lifeCycleName = Object.keys(consoleLogSettings)[consoleLogSettingIndex++];
-opt_extraInfoSpec = ["requestHeaders"];
-createListener(lifeCycleName, filter, opt_extraInfoSpec);
-
-// onHeadersReceived
-lifeCycleName = Object.keys(consoleLogSettings)[consoleLogSettingIndex++];
-opt_extraInfoSpec = ["responseHeaders"];
-createListener(lifeCycleName, filter, opt_extraInfoSpec);
-
-// onAuthRequired
-lifeCycleName = Object.keys(consoleLogSettings)[consoleLogSettingIndex++];
-opt_extraInfoSpec = ["blocking", "responseHeaders"];
-createListener(lifeCycleName, filter, opt_extraInfoSpec);
-
+for (const lifeCycleName of Object.keys(lifeCycleNames)) {
+  // console.log(lifeCycleName, lifeCycleNames[lifeCycleName].opt_extraInfoSpec);
+  createListener(lifeCycleName, filter, lifeCycleNames[lifeCycleName].opt_extraInfoSpec);
+}

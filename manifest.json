@@ -1,6 +1,6 @@
 {
   "name": "Chrome Extension Template",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "author": "Ivan Lim",
   "description": "Standard template for creating Chrome extension",
   "permissions": [
