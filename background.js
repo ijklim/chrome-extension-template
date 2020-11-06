@@ -33,7 +33,11 @@ const lifeCycleNames = {
   },
   onResponseStarted: {
     consoleLogSettings: 1,
-    opt_extraInfoSpec: ["responseHeaders"],
+    opt_extraInfoSpec: ["extraHeaders", "responseHeaders"],
+  },
+  onCompleted: {
+    consoleLogSettings: 1,
+    opt_extraInfoSpec: ["extraHeaders", "responseHeaders"],
   },
 };
 const pendingAuthRequests = [];
@@ -69,7 +73,6 @@ function createListener(lifeCycleName, filter, opt_extraInfoSpec) {
           timeStamp: details.timeStamp,
           type: details.type,
           url: details.url,
-          details,
         }
       );
     }
